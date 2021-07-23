@@ -2,7 +2,7 @@
 // methods for the use by other classes without having to be the parent class of those other classes
 //used by the "with " keyword
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import 'product.dart';
 
 class Products with ChangeNotifier {
 
@@ -55,5 +55,9 @@ class Products with ChangeNotifier {
     // _items.add(value); 
      //we now need to let our listeners=>"the interested widgets" know that the data has been changed
      notifyListeners(); //communication channel between provider and the widgets 
+  }
+
+  Product findById (String id) {
+    return _items.firstWhere((prod) => prod.id==id);  //compare the id of each product and return the matching product 
   }
 } 
