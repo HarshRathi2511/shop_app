@@ -42,13 +42,37 @@ class Products with ChangeNotifier {
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
- 
-
   ];
 
-  List<Product> get items {
+  // var _showFavoritesOnly=false;
+
+  List<Product> get items {  //we are managing the favorites and 
+  //the all the item in the same function because we are not adding a different 
+  //screen to show the favorited items ,rather we are just changing what is displayed on 
+  //the screen on pressing the showFavorites pop up button
+    // if(_showFavoritesOnly==true){
+    //   return _items.where((prodItem) =>prodItem.isFavorite==true).toList();
+    // }
     return [... _items]; //copy of the list //if we use (return _items;) ->pointer at this is returned 
                          //we could start editing the product list which we dont want 
+  }
+
+  List<Product> get favoriteItems {
+    return _items.where((prodItem) =>prodItem.isFavorite==true).toList();
+  }
+
+  // void showFavoritesOnly(){
+  //   _showFavoritesOnly=true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly=false;
+  //   notifyListeners();
+  // }
+
+   Product findById (String id) {
+    return _items.firstWhere((prod) => prod.id==id);  //compare the id of each product and return the matching product 
   }
   
   void addProduct() {
@@ -57,7 +81,5 @@ class Products with ChangeNotifier {
      notifyListeners(); //communication channel between provider and the widgets 
   }
 
-  Product findById (String id) {
-    return _items.firstWhere((prod) => prod.id==id);  //compare the id of each product and return the matching product 
-  }
+ 
 } 

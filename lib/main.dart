@@ -10,10 +10,14 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    print('Build Method of Main Ran');
+
     return ChangeNotifierProvider( //ChangeNotifierProvider is a provider by the package 
-   
+     //cleans up the data once used=>eg screen replaced 
      create: (ctx)=>Products(), //new one and the same instance of the provider class to the MaterialApp and all its children 
-      
+      //whenever you reuse an existing object => use .value constructor 
+      //whenever you instantiate a class =>create a new object on a class ==>use create method
       child: MaterialApp(
         title: 'MyShop',
         theme: ThemeData(

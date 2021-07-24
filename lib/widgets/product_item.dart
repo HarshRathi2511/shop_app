@@ -16,25 +16,29 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    print('Product_item build method ran');
 
-   final product=Provider.of<Product>(context);
-  
+    final product = Provider.of<Product>(context,
+        listen: false); //looks for the nearest provider
+    //we are listening to  "create:(c)=>  products[index]," this provider =>according to which product has been favorited
+    //listen: false => wont trigger notify listeners ,but will still change the data =>wont be affected in ui
 
-
-
+    print('Product rebuilds in product_item.dart');
     return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-          child: GridTile(
+      //(ctx=>instance of the ChangeNotifier,
+      //nearest instance it found of that data)
+      borderRadius: BorderRadius.circular(10),
+      child: GridTile(
         child: InkWell(
-
           onTap: () {
-            Navigator.of(context).pushNamed(ProductDetailScreen.routeName, arguments: product.id);
+            Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                arguments: product.id);
           },
-
           splashColor: Colors.deepPurpleAccent,
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-           product.imageUrl,
+            product.imageUrl,
             fit: BoxFit.cover,
           ),
         ),
@@ -44,15 +48,23 @@ class ProductItem extends StatelessWidget {
             //The widget to show over the bottom of this grid tile.//Typically a [GridTileBar].
             backgroundColor: Colors.black87,
 
-            leading: IconButton(
-              icon: Icon(product.isFavorite? Icons.favorite : Icons.favorite_border,
-               color: Theme.of(context).accentColor), 
-              //here we need Product data to know if it has already been marked favorite
-              onPressed: () {
-                product.toggleFavoriteStatus();
-              },
+            leading: Consumer<Product>(
+              //listener
+              
+              builder: (ctx, product, child) => (
+                IconButton(
+                //only this code is rebuild when the data changes
+                icon: Icon(
+                    product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Theme.of(context).accentColor),
+                //here we need Product data to know if it has already been marked favorite
+                onPressed: () {
+                  product.toggleFavoriteStatus();
+                  print('Consumer in product_item.dart ran');
+                },
+              )),
             ),
-             //A widget to display before the title.
+            //A widget to display before the title.
             title: Text(
               product.title,
               textAlign: TextAlign.center,
@@ -63,11 +75,8 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 color: Theme.of(context).accentColor,
               ),
-              onPressed: () {
-                
-              },
+              onPressed: () {},
             ),
-
           ),
         ),
       ),
