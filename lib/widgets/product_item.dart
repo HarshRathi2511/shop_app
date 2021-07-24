@@ -1,10 +1,11 @@
 //Widget for each grid item that gets rendered on the product overview screen
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/product_detail_screen.dart';
-import 'package:provider/provider.dart';
 import '../providers/product.dart';
+import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
   // const ProductItem({ Key? key }) : super(key: key);
@@ -19,10 +20,11 @@ class ProductItem extends StatelessWidget {
     
     print('Product_item build method ran');
 
-    final product = Provider.of<Product>(context,
-        listen: false); //looks for the nearest provider
+    final product = Provider.of<Product>(context,listen: false); //looks for the nearest provider
     //we are listening to  "create:(c)=>  products[index]," this provider =>according to which product has been favorited
     //listen: false => wont trigger notify listeners ,but will still change the data =>wont be affected in ui
+     
+    final cart=Provider.of<Cart>(context,listen: false); //we are not interested in changes to the cart
 
     print('Product rebuilds in product_item.dart');
     return ClipRRect(
@@ -75,7 +77,9 @@ class ProductItem extends StatelessWidget {
                 Icons.shopping_cart,
                 color: Theme.of(context).accentColor,
               ),
-              onPressed: () {},
+              onPressed: () {
+                cart.addItem(product.id, product.price, product.title);
+              },
             ),
           ),
         ),
