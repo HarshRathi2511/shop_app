@@ -18,7 +18,7 @@ class ProductsGrid extends StatelessWidget {
 
     final productsData = Provider.of<Products>(context); 
 
-    print('Build method of the products_grid ran after the provider method');
+    // print('Build method of the products_grid ran after the provider method');
     //only use this if directly or indirectly some provider
     // has been added to the parent widgets
     //only this child widgets are rebuild

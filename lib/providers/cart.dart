@@ -8,13 +8,12 @@ class CartItem {
 
   CartItem(
       {@required this.title,
-      @required this.id,
+      @required this.id, //id: DateTime.now().toString(),
       @required this.price,
       @required this.quantity});
 }
 
 class Cart with ChangeNotifier {
-
   Map<String, CartItem> _items = {}; //id =>CartItem map (string is the id)
 
   Map<String, CartItem> get items {
@@ -22,44 +21,58 @@ class Cart with ChangeNotifier {
   }
 
   int get itemCount {
-    return  _items.length;  //count of each different objects regardless of their individual quantity
+    return _items
+        .length; //count of each different objects regardless of their individual quantity
   }
-   
 
-   double get totalAmountInCart{
-      double total=0.0;
+  double get totalAmountInCart {
+    double total = 0.0;
 
-      _items.forEach((key, cartItem) {  //Applies [action] to each key/value pair of the map.
-        total=total+cartItem.price * cartItem.quantity;
-      });
+    _items.forEach((key, cartItem) {
+      //Applies [action] to each key/value pair of the map.
+      total = total + cartItem.price * cartItem.quantity;
+    });
 
-      return total;
-
-
-   }
-
+    return total;
+  }
 
   void addItem(String productId, double price, String title) {
+    //productId ='p4' example
     //if item already present just increase quantity
     if (_items.containsKey(productId)) {
       //change quantity
-      _items.update(  //Updates the value for the provided [key].
+      _items.update(
+          //Updates the value for the provided [key].
           productId,
           (existingCartItemValue) => CartItem(
               id: existingCartItemValue.id,
               title: existingCartItemValue.title,
               price: existingCartItemValue.price,
-              quantity: existingCartItemValue.quantity +1)); 
+              quantity: existingCartItemValue.quantity + 1));
       //existingCartItemValue =>automatically has the existing data
     } else {
-      _items.putIfAbsent(  //Look up the value of [key], or add a new entry if it isn't there.
+      _items.putIfAbsent(
+          //Look up the value of [key], or add a new entry if it isn't there.
           productId,
-          () => CartItem(   //a CartItem object is added in _items list
+          () => CartItem(
+              //a CartItem object is added in _items list
               title: title,
               id: DateTime.now().toString(),
               price: price,
               quantity: 1));
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    print(productId);
+    _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clearCart() {
+    //after we press the order button the cart should be cleared
+    _items = {};
     notifyListeners();
   }
 }

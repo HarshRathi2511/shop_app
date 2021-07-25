@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
-
-import '../providers/product.dart';
-import '../providers/products_provider.dart';
 
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
@@ -27,7 +25,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Build Method of Build OverView Screen Ran');
+    // print('Build Method of Build OverView Screen Ran');
 
     return Scaffold(
       appBar: AppBar(
@@ -61,8 +59,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ), //{List<PopupMenuEntry<dynamic>> Function(BuildContext) itemBuilder}
 
           Consumer<Cart>(
-              builder: (context, cart, ch) => Badge(
-                    
+              builder: (context, cart, ch) => Badge(                  
                     child: ch,
                     value: cart.itemCount.toString(),
                   ),
@@ -73,6 +70,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                   //this icon button is automatically connected to 'ch'
         ],
       ),
+
+      drawer: AppDrawer(),
 
       body: ProductsGrid(_showOnlyFavorites),
     );

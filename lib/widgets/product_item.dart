@@ -18,7 +18,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    print('Product_item build method ran');
+    // print('Product_item build method ran');
 
     final product = Provider.of<Product>(context,listen: false); //looks for the nearest provider
     //we are listening to  "create:(c)=>  products[index]," this provider =>according to which product has been favorited
@@ -26,7 +26,7 @@ class ProductItem extends StatelessWidget {
      
     final cart=Provider.of<Cart>(context,listen: false); //we are not interested in changes to the cart
 
-    print('Product rebuilds in product_item.dart');
+    // print('Product rebuilds in product_item.dart');
     return ClipRRect(
       //(ctx=>instance of the ChangeNotifier,
       //nearest instance it found of that data)
@@ -62,7 +62,7 @@ class ProductItem extends StatelessWidget {
                 //here we need Product data to know if it has already been marked favorite
                 onPressed: () {
                   product.toggleFavoriteStatus();
-                  print('Consumer in product_item.dart ran');
+                  
                 },
               )),
             ),
@@ -79,6 +79,7 @@ class ProductItem extends StatelessWidget {
               ),
               onPressed: () {
                 cart.addItem(product.id, product.price, product.title);
+                print(product.id);
               },
             ),
           ),
