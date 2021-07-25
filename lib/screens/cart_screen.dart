@@ -67,9 +67,7 @@ class CartScreen extends StatelessWidget {
                   productId: cart.items.keys.toList()[i], //'p4'
                   //keys preserve state when widgets move around in
                   //your widget tree
-                  id: cart.items.values
-                      .toList()[i]
-                      .id, //2021-07-24 21:08:59.497129(Date Time Now)
+                  id: cart.items.values.toList()[i].id, //2021-07-24 21:08:59.497129(Date Time Now)
                   price: cart.items.values.toList()[i].price,
                   quantity: cart.items.values.toList()[i].quantity)),
         )

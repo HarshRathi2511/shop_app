@@ -17,7 +17,7 @@ class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {}; //id =>CartItem map (string is the id)
 
   Map<String, CartItem> get items {
-    return {..._items};
+    return {..._items};   //
   }
 
   int get itemCount {
@@ -65,14 +65,35 @@ class Cart with ChangeNotifier {
   }
 
   void removeItem(String productId) {
-    print(productId);
-    _items.remove(productId);
+    print(productId); //p4
+    _items.remove(productId); //the key is 'productId'
     notifyListeners();
   }
 
   void clearCart() {
     //after we press the order button the cart should be cleared
     _items = {};
+    notifyListeners();
+  }
+
+  void undoAddingItemInCart(String productId) {
+    // _items.removeWhere((key, value) => value.id==productId);
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+    if (_items[productId].quantity > 1) {
+      print(productId);
+      _items.update(
+          productId,
+          (existingCartItem) => CartItem(
+              title: existingCartItem.title,
+              id: existingCartItem.id,
+              price: existingCartItem.price,
+              quantity: existingCartItem.quantity - 1));
+    }
+    else { //qunatity =1 =>completely remove that product 
+      _items.remove(productId); //these are the methods applied on the map 
+    }
     notifyListeners();
   }
 }
