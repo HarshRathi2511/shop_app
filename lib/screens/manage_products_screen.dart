@@ -8,6 +8,7 @@ import '../providers/cart.dart';
 import '../providers/orders.dart';
 import '../providers/products_provider.dart';
 import '../widgets/user_product_item.dart';
+import '../screens/edit_product_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
   // const UserProductsScreen({ Key? key }) : super(key: key);
@@ -22,7 +23,7 @@ class UserProductsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(' Manage products'),
         actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {
-
+          Navigator.of(context).pushNamed(EditProductScreen.routeName);
         })],
       ),
       
