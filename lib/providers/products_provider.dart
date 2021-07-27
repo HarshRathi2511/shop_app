@@ -1,13 +1,11 @@
- //mixin -->class that contains
+//mixin -->class that contains
 // methods for the use by other classes without having to be the parent class of those other classes
 //used by the "with " keyword
 import 'package:flutter/material.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-
   List<Product> _items = [
-  
     //dummy data
 
     Product(
@@ -46,19 +44,22 @@ class Products with ChangeNotifier {
 
   // var _showFavoritesOnly=false;
 
-  List<Product> get items {  //we are managing the favorites and 
-  //the all the item in the same function because we are not adding a different 
-  //screen to show the favorited items ,rather we are just changing what is displayed on 
-  //the screen on pressing the showFavorites pop up button
+  List<Product> get items {
+    //we are managing the favorites and
+    //the all the item in the same function because we are not adding a different
+    //screen to show the favorited items ,rather we are just changing what is displayed on
+    //the screen on pressing the showFavorites pop up button
     // if(_showFavoritesOnly==true){
     //   return _items.where((prodItem) =>prodItem.isFavorite==true).toList();
     // }
-    return [... _items]; //copy of the list //if we use (return _items;) ->pointer at this is returned 
-                         //we could start editing the product list which we dont want 
+    return [
+      ..._items
+    ]; //copy of the list //if we use (return _items;) ->pointer at this is returned
+    //we could start editing the product list which we dont want
   }
 
   List<Product> get favoriteItems {
-    return _items.where((prodItem) =>prodItem.isFavorite==true).toList();
+    return _items.where((prodItem) => prodItem.isFavorite == true).toList();
   }
 
   // void showFavoritesOnly(){
@@ -71,15 +72,33 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-   Product findById (String id) {
-    return _items.firstWhere((prod) => prod.id==id);  //compare the id of each product and return the matching product 
-  }
-  
-  void addProduct() {
-    // _items.add(value); 
-     //we now need to let our listeners=>"the interested widgets" know that the data has been changed
-     notifyListeners(); //communication channel between provider and the widgets 
+  Product findById(String id) {
+    return _items.firstWhere((prod) => prod.id == id);
+    //compare the id of each product and return the matching product
   }
 
- 
-} 
+  void addProduct(Product product) {
+    // _items.add(value);
+    //we now need to let our listeners=>"the interested widgets" know that the data has been changed
+    final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl);
+
+     _items.add(newProduct); 
+    notifyListeners(); //communication channel between provider and the widgets
+  }
+
+  void updateProduct (String id, Product newProduct){
+    final prodIndex=_items.indexWhere((prod)=>prod.id==id);
+    _items[prodIndex]=newProduct;
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((prod) =>prod.id==id );
+    notifyListeners();
+  }
+}

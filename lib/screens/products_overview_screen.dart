@@ -20,7 +20,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-
   var _showOnlyFavorites = false;
 
   @override
@@ -59,20 +58,20 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ), //{List<PopupMenuEntry<dynamic>> Function(BuildContext) itemBuilder}
 
           Consumer<Cart>(
-              builder: (context, cart, ch) => Badge(                  
-                    child: ch,
-                    value: cart.itemCount.toString(),
-                  ),
-                  child: IconButton( icon: Icon(Icons.shopping_cart), onPressed: () {
-                    Navigator.pushNamed(context, CartScreen.routeName);
-                  }),
-                  ),
-                  //this icon button is automatically connected to 'ch'
+            builder: (context, cart, ch) => Badge(
+              child: ch,
+              value: cart.itemCount.toString(),
+            ),
+            child: IconButton(
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.pushNamed(context, CartScreen.routeName);
+                }),
+          ),
+          //this icon button is automatically connected to 'ch'
         ],
       ),
-
       drawer: AppDrawer(),
-
       body: ProductsGrid(_showOnlyFavorites),
     );
   }

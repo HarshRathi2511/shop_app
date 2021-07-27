@@ -42,13 +42,13 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: ()  {
                       Provider.of<Orders>(context, listen: false).addOrder(
                           //we are not interested in ui changes ->just the data change reqd
                           cart.items.values.toList(),
                           cart.totalAmountInCart);
-
-                      cart.clearCart();    
+                 
+                      cart.clearCart();
                     },
                     child: Text('ORDER NOW'),
                   )
@@ -67,7 +67,9 @@ class CartScreen extends StatelessWidget {
                   productId: cart.items.keys.toList()[i], //'p4'
                   //keys preserve state when widgets move around in
                   //your widget tree
-                  id: cart.items.values.toList()[i].id, //2021-07-24 21:08:59.497129(Date Time Now)
+                  id: cart.items.values
+                      .toList()[i]
+                      .id, //2021-07-24 21:08:59.497129(Date Time Now)
                   price: cart.items.values.toList()[i].price,
                   quantity: cart.items.values.toList()[i].quantity)),
         )

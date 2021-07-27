@@ -1,10 +1,8 @@
 //contains the list view which builds the overview screen
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/providers/product.dart';
 
 import '../providers/products_provider.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/product_item.dart';
 
 class ProductsGrid extends StatelessWidget {

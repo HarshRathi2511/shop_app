@@ -11,7 +11,7 @@ class CartItemWidget extends StatelessWidget {
   // const CartItemWidget({ Key? key }) : super(key: key);
 
   final String id;
-  final String productId; //contains random keys generated
+  final String productId;   
   final double price;
   final String title;
   final int quantity;
