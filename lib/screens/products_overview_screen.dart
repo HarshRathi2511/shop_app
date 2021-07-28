@@ -6,6 +6,7 @@ import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
 import '../screens/cart_screen.dart';
+import '../providers/products_provider.dart';
 
 enum FilterOptionsPopUp {
   Favorites,
@@ -21,6 +22,41 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
+
+  @override
+  void initState() { //
+    // TODO: implement initState
+    // Provider.of<Products>(context).fetchAndSetProducts(); //WONT WORK
+    //only if we use this in init state then we need to give listen false
+
+    //method 2
+    // Future.delayed(Duration.zero).then((_){
+    //    Provider.of<Products>(context).fetchAndSetProducts();
+    // });
+
+    super.initState();
+  }
+  var _isInit=true;
+
+  var _isLoading =false;
+
+//do not use async here and change the type of value returned by the didChangeDependencies 
+  @override
+  void didChangeDependencies() { //after widget fully initailaised but before build ran
+    if(_isInit) {  
+       setState(() {
+           _isLoading=true;
+        });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+           _isLoading=false;
+        });
+       
+      });
+    }
+    _isInit=false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +108,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading ? Center(child:CircularProgressIndicator()):ProductsGrid(_showOnlyFavorites),
     );
   }
 }

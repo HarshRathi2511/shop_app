@@ -11,30 +11,30 @@ class Products with ChangeNotifier {
   List<Product> _items = [
     //dummy data
 
-    Product(
-      id: 'p1',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-      id: 'p2',
-      title: 'Trousers',
-      description: 'A nice pair of trousers.',
-      price: 59.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    ),
-    Product(
-      id: 'p3',
-      title: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
-      price: 19.99,
-      imageUrl:
-          'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    ),
+    // Product(
+    //   id: 'p1',
+    //   title: 'Red Shirt',
+    //   description: 'A red shirt - it is pretty red!',
+    //   price: 29.99,
+    //   imageUrl:
+    //       'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+    // ),
+    // Product(
+    //   id: 'p2',
+    //   title: 'Trousers',
+    //   description: 'A nice pair of trousers.',
+    //   price: 59.99,
+    //   imageUrl:
+    //       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+    // ),
+    // Product(
+    //   id: 'p3',
+    //   title: 'Yellow Scarf',
+    //   description: 'Warm and cozy - exactly what you need for the winter.',
+    //   price: 19.99,
+    //   imageUrl:
+    //       'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+    // ),
     Product(
       id: 'p4',
       title: 'A Pan',
@@ -80,13 +80,56 @@ class Products with ChangeNotifier {
     //compare the id of each product and return the matching product
   }
 
+
+  //response.body yields a (map within a another map)
+  // {-MfhPsDpHK-79RbN9BvK: 
+  //{description: Fries away all your dreams , 
+  //imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg,
+  // isFavorite: false, 
+  //price: 12.99, 
+  //title: Frying pan}, 
+
+  //-MfhQbjAe9zZWmRR_CpP: {description: Cool yellow Scarf!, imageUrl: https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg, isFavorite: false, price: 21.99, title: Yellow Scarf}, -MfhQk6a2vUPGJ26i-gr: {description: Smart and comfortable!, imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg, isFavorite: false, price: 15.77, title: Trousers }}
+
+
+  Future<void> fetchAndSetProducts() async {
+    final url = Uri.https(
+        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
+    try {
+      final response = await http.get(
+          url); //Future<Response> get(Uri url, {Map<String, String> headers})
+      print(json.decode(response.body));
+      final extractedData=json.decode(response.body) as Map <String,dynamic>;
+      final List<Product> loadedProducts=[];
+      extractedData.forEach((prodKey, prodValue) {   //Applies [action] to each key/value pair of the map
+         loadedProducts.add(
+           Product(
+             id:prodKey,
+             description: prodValue['description'],
+             title: prodValue['title'],
+             isFavorite: prodValue['isFavorite'],
+             price: prodValue['price'],
+             imageUrl: prodValue['imageUrl'],
+           ),
+
+         );
+       }); 
+
+       _items=loadedProducts;
+       notifyListeners();                 
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future<void> addProduct(Product product) async {
     //async->always returns a future
     //If a future doesnt return a usbale value then the futures type is Future<void>
     //body->type of arguments
     // JSON ->JavaScript Object Notation =>format for storing and transmitting data
     final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.co', '/products.json');
+        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
     //should end with json for firebase
     //after /=>we can specify any ending and a folder is created on the basis of that url
     try {
@@ -118,14 +161,14 @@ class Products with ChangeNotifier {
       throw error;
     }
   }
-    // then((response){ //executes once function done ,,,response=>response we get from the server
+  // then((response){ //executes once function done ,,,response=>response we get from the server
 
-    // print(json.decode(response.body)); //mostly converted to a map by decode
+  // print(json.decode(response.body)); //mostly converted to a map by decode
 
-    //prints ->{name: -MfcZWD0iMtB8tQ_ma43} //use this as a id
-    //just use one id for the entire project ->wont have issues with backend and frontend memory
-    //i.e just use the backend id for each product
- 
+  //prints ->{name: -MfcZWD0iMtB8tQ_ma43} //use this as a id
+  //just use one id for the entire project ->wont have issues with backend and frontend memory
+  //i.e just use the backend id for each product
+
   // .catchError((error){
   //if the error caught in http post then dart skips the code
   //statement and directly comes to the catchError
