@@ -80,50 +80,67 @@ class Products with ChangeNotifier {
     //compare the id of each product and return the matching product
   }
 
-  void addProduct(Product product) {
-
-    final url = Uri.https('shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
+  Future<void> addProduct(Product product) async {
+    //async->always returns a future
+    //If a future doesnt return a usbale value then the futures type is Future<void>
+    //body->type of arguments
+    // JSON ->JavaScript Object Notation =>format for storing and transmitting data
+    final url = Uri.https(
+        'shop-app-16d20-default-rtdb.firebaseio.co', '/products.json');
     //should end with json for firebase
     //after /=>we can specify any ending and a folder is created on the basis of that url
-    http.post(url,body:  json.encode({
-        'title' : product.title,
-      'imageUrl': product.imageUrl,
-      'description':product.description, //pass a map in json
-      'price':product.price,
-      'isFavorite':product.isFavorite,
-      // 'id':
-    }), //String encode(Object value, {Object Function(dynamic) toEncodable})
-    ).then((response) {  //executes once function done ,,,response=>response we get from the server 
-    
-    print(json.decode(response.body)); //mostly converted to a map by decode
-    //prints ->{name: -MfcZWD0iMtB8tQ_ma43} //use this as a id 
-    //just use one id for the entire project ->wont have issues with backend and frontend memory
-    //i.e just use the backend id for each product 
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          //return contains the response of the http.post method =>
+          //http.post method returns a then property which adds the product to the list
+          'title': product.title,
+          'imageUrl': product.imageUrl,
+          'description': product.description, //pass a map in json
+          'price': product.price,
+          'isFavorite': product.isFavorite,
+          // 'id':
+        }), //String encode(Object value, {Object Function(dynamic) toEncodable})
+      );
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl);
 
-       final newProduct = Product(
-        id: json.decode(response.body)['name'],
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl);
+      _items.add(newProduct);
 
-    _items.add(newProduct); 
-    notifyListeners(); //communication channel between provider and the widgets
-
-    }); //body->type of arguments
-    // JSON ->JavaScript Object Notation =>format for storing and transmitting data
-
-    
+      notifyListeners(); //communication channel between provider and the widgets
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
+    // then((response){ //executes once function done ,,,response=>response we get from the server
 
-  void updateProduct (String id, Product newProduct){
-    final prodIndex=_items.indexWhere((prod)=>prod.id==id);
-    _items[prodIndex]=newProduct;
+    // print(json.decode(response.body)); //mostly converted to a map by decode
+
+    //prints ->{name: -MfcZWD0iMtB8tQ_ma43} //use this as a id
+    //just use one id for the entire project ->wont have issues with backend and frontend memory
+    //i.e just use the backend id for each product
+ 
+  // .catchError((error){
+  //if the error caught in http post then dart skips the code
+  //statement and directly comes to the catchError
+  // print(error);
+  //   throw error; //to add another catchError somewhere else
+  // });
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    _items[prodIndex] = newProduct;
     notifyListeners();
   }
 
   void deleteProduct(String id) {
-    _items.removeWhere((prod) =>prod.id==id );
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }
