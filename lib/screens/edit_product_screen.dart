@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/providers/product.dart';
-import 'package:flutter_complete_guide/widgets/app_drawer.dart';
-import '../widgets/cart_item.dart';
 import 'package:provider/provider.dart';
-import '../providers/cart.dart';
-import '../providers/orders.dart';
 import '../providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {

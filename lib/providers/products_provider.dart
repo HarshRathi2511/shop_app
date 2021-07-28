@@ -3,6 +3,9 @@
 //used by the "with " keyword
 import 'package:flutter/material.dart';
 import 'product.dart';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -78,17 +81,39 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    // _items.add(value);
-    //we now need to let our listeners=>"the interested widgets" know that the data has been changed
-    final newProduct = Product(
-        id: DateTime.now().toString(),
+
+    final url = Uri.https('shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
+    //should end with json for firebase
+    //after /=>we can specify any ending and a folder is created on the basis of that url
+    http.post(url,body:  json.encode({
+        'title' : product.title,
+      'imageUrl': product.imageUrl,
+      'description':product.description, //pass a map in json
+      'price':product.price,
+      'isFavorite':product.isFavorite,
+      // 'id':
+    }), //String encode(Object value, {Object Function(dynamic) toEncodable})
+    ).then((response) {  //executes once function done ,,,response=>response we get from the server 
+    
+    print(json.decode(response.body)); //mostly converted to a map by decode
+    //prints ->{name: -MfcZWD0iMtB8tQ_ma43} //use this as a id 
+    //just use one id for the entire project ->wont have issues with backend and frontend memory
+    //i.e just use the backend id for each product 
+
+       final newProduct = Product(
+        id: json.decode(response.body)['name'],
         title: product.title,
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl);
 
-     _items.add(newProduct); 
+    _items.add(newProduct); 
     notifyListeners(); //communication channel between provider and the widgets
+
+    }); //body->type of arguments
+    // JSON ->JavaScript Object Notation =>format for storing and transmitting data
+
+    
   }
 
   void updateProduct (String id, Product newProduct){
