@@ -118,7 +118,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }); //the loading widget shows now before we update or add the products
 
     if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false)
+      await Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
       Navigator.of(context).pop();
       setState(() {

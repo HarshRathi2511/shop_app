@@ -6,6 +6,7 @@ import 'product.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import '../models/http_exceptions.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -80,17 +81,15 @@ class Products with ChangeNotifier {
     //compare the id of each product and return the matching product
   }
 
-
   //response.body yields a (map within a another map)
-  // {-MfhPsDpHK-79RbN9BvK: 
-  //{description: Fries away all your dreams , 
+  // {-MfhPsDpHK-79RbN9BvK:
+  //{description: Fries away all your dreams ,
   //imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg,
-  // isFavorite: false, 
-  //price: 12.99, 
-  //title: Frying pan}, 
+  // isFavorite: false,
+  //price: 12.99,
+  //title: Frying pan},
 
   //-MfhQbjAe9zZWmRR_CpP: {description: Cool yellow Scarf!, imageUrl: https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg, isFavorite: false, price: 21.99, title: Yellow Scarf}, -MfhQk6a2vUPGJ26i-gr: {description: Smart and comfortable!, imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg, isFavorite: false, price: 15.77, title: Trousers }}
-
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.https(
@@ -99,25 +98,24 @@ class Products with ChangeNotifier {
       final response = await http.get(
           url); //Future<Response> get(Uri url, {Map<String, String> headers})
       print(json.decode(response.body));
-      final extractedData=json.decode(response.body) as Map <String,dynamic>;
-      final List<Product> loadedProducts=[];
-      extractedData.forEach((prodKey, prodValue) {   //Applies [action] to each key/value pair of the map
-         loadedProducts.add(
-           Product(
-             id:prodKey,
-             description: prodValue['description'],
-             title: prodValue['title'],
-             isFavorite: prodValue['isFavorite'],
-             price: prodValue['price'],
-             imageUrl: prodValue['imageUrl'],
-           ),
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((prodKey, prodValue) {
+        //Applies [action] to each key/value pair of the map
+        loadedProducts.add(
+          Product(
+            id: prodKey,
+            description: prodValue['description'],
+            title: prodValue['title'],
+            isFavorite: prodValue['isFavorite'],
+            price: prodValue['price'],
+            imageUrl: prodValue['imageUrl'],
+          ),
+        );
+      });
 
-         );
-       }); 
-
-       _items=loadedProducts;
-       notifyListeners();                 
-
+      _items = loadedProducts;
+      notifyListeners();
     } catch (error) {
       throw error;
     }
@@ -176,14 +174,55 @@ class Products with ChangeNotifier {
   //   throw error; //to add another catchError somewhere else
   // });
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
+
+    final url = Uri.https(
+        'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
+    //to update the products in firebase =>'/products/$id.json to get into one specefic product
+
+    await http.patch(url,
+        body: json.encode({
+          'title': newProduct.title, //newProduct is the updated product
+          'description': newProduct.description,
+          'imageUrl': newProduct.imageUrl,
+          'price': newProduct.price,
+        }));
+
     _items[prodIndex] = newProduct;
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url = Uri.https(
+        'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
+
+    final existingProductIndex =
+        _items.indexWhere((element) => element.id == id);
+    var existingProduct = _items[
+        existingProductIndex]; //Save the pointers of the product which is about to be deleted
+
+    _items.removeAt(existingProductIndex);
+    notifyListeners(); //just removed from the list but not from the complete memory
+
+    //OPTIMISTIC UPDATING
+    //delete doesnt execute properly=>web servers send back status codes whether action completed or not
+
+    final response = await http.delete(url);
+
+    // print(response.statusCode); //405 ->error occured but catchError doesnt catch it (now it has been fixed)
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex,
+          existingProduct); //reinsert the element in the list if we falied somewhere
+      notifyListeners(); //just removed from the list but not from the complete memory
+      throw HttpExceptions(
+          'Could not delete product'); //then we make it into catchError
+    }
+
+    existingProduct =
+        null; //if we are able to delete without any errors delete the pointer as well ,otherwise don't
+
     notifyListeners();
+    //delete that id from the complete screen
   }
 }
