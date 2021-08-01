@@ -61,7 +61,7 @@ class ProductItem extends StatelessWidget {
                     color: Theme.of(context).accentColor),
                 //here we need Product data to know if it has already been marked favorite
                 onPressed: () {
-                  product.toggleFavoriteStatus();
+                  product.toggleFavoriteStatus(product.id);
                 },
               )),
             ),

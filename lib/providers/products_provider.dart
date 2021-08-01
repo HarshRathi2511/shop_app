@@ -97,8 +97,11 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(
           url); //Future<Response> get(Uri url, {Map<String, String> headers})
-      print(json.decode(response.body));
+      // print(json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if(extractedData==null) {
+        return;
+      }
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodKey, prodValue) {
         //Applies [action] to each key/value pair of the map
@@ -194,6 +197,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
+    
     final url = Uri.https(
         'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
 
