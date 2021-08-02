@@ -39,6 +39,7 @@ class ProductsGrid extends StatelessWidget {
       itemBuilder: (BuildContext ctx, int index) {
         //chnages in the favorite status =>(changes in single Product model are only needed in the ProductItem class )
         return ChangeNotifierProvider.value(   //use the .value constructor for list/grid 
+        //and for existing objects in the memory 
             value: products[index],  //will return a single product item as 
             //.value ensures that the provider works even if the data changes
             //it is stored in the products class,it will do this multiple times as it is in a list view builder 
