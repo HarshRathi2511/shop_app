@@ -130,7 +130,7 @@ class _AuthCardState extends State<AuthCard> {
       // Invalid!
       return;
     }
-    _formKey.currentState.save(); //onSave method on the inputs triggered
+    _formKey.currentState.save(); //onSaved method on the inputs triggered
     setState(() {
       _isLoading = true;
     });
@@ -145,13 +145,14 @@ class _AuthCardState extends State<AuthCard> {
             .signup(_authData['email'], _authData['password']);
       }
     } on HttpExceptions catch (error) {
-      //to specify the error class use on <ErrorClass> name
+      //error contains throw HttpExceptions(responseData['error']['message']);
+      //to specify the error class use "on <ErrorClass>"" name
       var errorMessage = 'Authentication Failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
         //here toString also returns the error as we override the default type
         errorMessage = 'This email address already exists';
       } else if (error.toString().contains('INVALID_EMAIL')) {
-        errorMessage = 'This is not a valid email address';
+        errorMessage = 'Invalid email address';
       } else if (error.toString().contains('WEAK_PASSWORD')) {
         errorMessage = 'This password is too weak';
       } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
@@ -162,6 +163,7 @@ class _AuthCardState extends State<AuthCard> {
       _showErrorDialogue(errorMessage);
     } catch (error) {
       //to catch generic error
+      //eg when we loose internet connection 
       var errorMessage = 'Could not authenticate you';
        _showErrorDialogue(errorMessage);
     }

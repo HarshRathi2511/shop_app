@@ -36,17 +36,20 @@ class Products with ChangeNotifier {
     //   imageUrl:
     //       'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
     // ),
-    Product(
-      id: 'p4',
-      title: 'A Pan',
-      description: 'Prepare any meal you want.',
-      price: 49.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    // Product(
+    //   id: 'p4',
+    //   title: 'A Pan',
+    //   description: 'Prepare any meal you want.',
+    //   price: 49.99,
+    //   imageUrl:
+    //       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
+    // ),
   ];
 
   // var _showFavoritesOnly=false;
+
+  final String authToken;
+  Products(this.authToken,this._items);
 
   List<Product> get items {
     //we are managing the favorites and
@@ -93,7 +96,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
+        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json?auth=$authToken');
     try {
       final response = await http.get(
           url); //Future<Response> get(Uri url, {Map<String, String> headers})
@@ -133,6 +136,7 @@ class Products with ChangeNotifier {
         'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
     //should end with json for firebase
     //after /=>we can specify any ending and a folder is created on the basis of that url
+    //if we want to attach the token to the api we do it in firebase by '/products.json?auth=...'
     try {
       final response = await http.post(
         url,

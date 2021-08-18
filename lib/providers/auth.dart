@@ -9,10 +9,28 @@ class Auth with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
 
-  Future<void> signup(String email, String password) async {
+  bool get isAuth {
+    if (tokenData != null) {
+      return true;
+    }
+    return false;
+  }
+
+  String get tokenData {
+    if (_expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now()) &&
+        _token !=
+            null) //_expiryDate.isAfter(DateTime.now())->means expiry date sometime in the future
+    {
+      return _token;
+    }
+    return null;
+  }
+
+  Future<void> _authenticate(
+      String email, String password, String urlAuth) async {
     try {
-      final url = Uri.parse(
-          'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCskLDea1LV3lGR20monGKGz7gUGWlkuT8');
+      final url = Uri.parse(urlAuth);
       //API_KEY ->settings of firebase-> web api key
       //https://firebase.google.com/docs/reference/rest/auth/#section-create-email-password =>visit this
       final response = await http.post(url,
@@ -31,34 +49,29 @@ class Auth with ChangeNotifier {
 // expiresIn	  string	The number of seconds in which the ID token expires.
 // localId	    string	The uid of the newly created user.
 
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) { 
+        //sample error returned from firebase  
+        //{error: {code: 400, message: EMAIL_EXISTS, errors: [{message: EMAIL_EXISTS, domain: global, reason: invalid}]}}
+        throw HttpExceptions(responseData['error']['message']);
+      }
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expiryDate = DateTime.now()
+          .add(Duration(seconds: int.parse(responseData['expiresIn'])));
+      notifyListeners();
     } catch (error) {
       throw error;
     }
   }
 
+  Future<void> signup(String email, String password) async {
+    return _authenticate(email, password,
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCskLDea1LV3lGR20monGKGz7gUGWlkuT8');
+  }
+
   Future<void> login(String email, String password) async {
-    try {
-      final url = Uri.parse(
-          'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCskLDea1LV3lGR20monGKGz7gUGWlkuT8');
-
-      final response = await http.post(url,
-          body: json.encode({
-            'email': email,
-            'password': password,
-            'returnSecureToken': true, //in the docs
-          }));
-      //{error: {code: 400, message: EMAIL_EXISTS, errors: [{message: EMAIL_EXISTS, domain: global, reason: invalid}]}}
-
-      final responseData = json.decode(response.body);
-
-      if (responseData['error'] != null) {
-        //because status code might not be caught by error handling
-        throw HttpExceptions(responseData['error']['message']);
-      }
-    } catch (error) {
-      throw error;
-    }
-
-    print('Logged in ');
+    return _authenticate(email, password,
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCskLDea1LV3lGR20monGKGz7gUGWlkuT8');
   }
 }
