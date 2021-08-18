@@ -1,6 +1,7 @@
 //Widget for each grid item that gets rendered on the product overview screen
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/providers/auth.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/product_detail_screen.dart';
@@ -26,7 +27,7 @@ class ProductItem extends StatelessWidget {
 
     final cart = Provider.of<Cart>(context,
         listen: false); //we are not interested in changes to the cart
-
+   final authData =Provider.of<Auth>(context,listen:false);
     // print('Product rebuilds in product_item.dart');
     return ClipRRect(
       //(ctx=>instance of the ChangeNotifier,
@@ -61,7 +62,8 @@ class ProductItem extends StatelessWidget {
                     color: Theme.of(context).accentColor),
                 //here we need Product data to know if it has already been marked favorite
                 onPressed: () {
-                  product.toggleFavoriteStatus(product.id);
+                  //pass the token here 
+                  product.toggleFavoriteStatus(product.id,authData.tokenData);
                 },
               )),
             ),

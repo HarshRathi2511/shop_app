@@ -31,12 +31,12 @@ class MyApp extends StatelessWidget {
             //depends on another provider defined before this
             //cleans up the data once used=>eg screen replaced
             //at this point we have access to the previously provided objets
-            //whenever auth changes this provider rebuilds 
-            create: (ctx) => Products('token',[]),
-                // Provider.of<Auth>(context, listen: false).tokenData,
-                // Provider.of<Products>(context, listen: false).items),
+            //whenever auth changes this provider rebuilds
+            create: (ctx) => Products('token', []),
+            // Provider.of<Auth>(context, listen: false).tokenData,
+            // Provider.of<Products>(context, listen: false).items),
 
-                //when we use the update method then the previous state gets erased 
+            //when we use the update method then the previous state gets erased
             update: (ctx, auth, previousProducts) => Products(auth.tokenData,
                 previousProducts == null ? [] : previousProducts.items),
 
@@ -50,8 +50,10 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
-          ChangeNotifierProvider(
-            create: (ctx) => Orders(),
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            create: (ctx) => Orders('token', []),
+            update: (ctx, auth, previousOrders) => Orders(auth.tokenData,
+                previousOrders == null ? [] : previousOrders.orders),
           ),
         ],
         child: Consumer<Auth>(
@@ -59,7 +61,7 @@ class MyApp extends StatelessWidget {
           builder: (c, auth, _) {
             //finds nearest instance of auth
             return MaterialApp(
-              title:  'MyShop',
+              title: 'MyShop',
               theme: ThemeData(
                   primarySwatch: Colors.purple,
                   accentColor: Colors.orange,

@@ -142,8 +142,8 @@ class Products with ChangeNotifier {
     //If a future doesnt return a usbale value then the futures type is Future<void>
     //body->type of arguments
     // JSON ->JavaScript Object Notation =>format for storing and transmitting data
-    final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json');
+    final url = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     //should end with json for firebase
     //after /=>we can specify any ending and a folder is created on the basis of that url
     //if we want to attach the token to the api we do it in firebase by '/products.json?auth=...'
@@ -193,9 +193,10 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
-
-    final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
+   //Uri.parse(
+        // 'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+    final url = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
     //to update the products in firebase =>'/products/$id.json to get into one specefic product
 
     await http.patch(url,
@@ -211,8 +212,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
+    final url = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
 
     final existingProductIndex =
         _items.indexWhere((element) => element.id == id);

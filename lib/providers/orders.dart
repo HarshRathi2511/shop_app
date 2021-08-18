@@ -21,13 +21,16 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
+  final String authToken;
+  Orders(this.authToken,this._orders);
+
   List<OrderItem> get orders {
     return [..._orders]; //so that we cant edit orders outside the class
   }
 
 Future<void> fetchAndSetOrders() async {
       final url =
-        Uri.https('shop-app-16d20-default-rtdb.firebaseio.com', '/orders.json');
+        Uri.parse('https://shop-app-16d20-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
 
         try {
           final response = await http.get(url);
@@ -78,7 +81,7 @@ Future<void> fetchAndSetOrders() async {
     //the index towards the end of the list.
 
     final url =
-        Uri.https('shop-app-16d20-default-rtdb.firebaseio.com', '/orders.json');
+        Uri.parse('https://shop-app-16d20-default-rtdb.firebaseio.com/orders/orders.json?auth=$authToken');
 
     //  Creates a new http URI from authority, path and query.
 // Examples:
