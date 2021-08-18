@@ -27,12 +27,16 @@ class MyApp extends StatelessWidget {
           ),
           //when auth object changes this provider is also updated
           ChangeNotifierProxyProvider<Auth, Products>(
+            //<data you depend on, actual provider>
             //depends on another provider defined before this
             //cleans up the data once used=>eg screen replaced
             //at this point we have access to the previously provided objets
+            //whenever auth changes this provider rebuilds 
             create: (ctx) => Products('token',[]),
                 // Provider.of<Auth>(context, listen: false).tokenData,
                 // Provider.of<Products>(context, listen: false).items),
+
+                //when we use the update method then the previous state gets erased 
             update: (ctx, auth, previousProducts) => Products(auth.tokenData,
                 previousProducts == null ? [] : previousProducts.items),
 
@@ -51,11 +55,11 @@ class MyApp extends StatelessWidget {
           ),
         ],
         child: Consumer<Auth>(
-          //material app rebuild whenever auth changes
+          //material app rebuild whenever data in auth provider changes
           builder: (c, auth, _) {
             //finds nearest instance of auth
             return MaterialApp(
-              title: 'MyShop',
+              title:  'MyShop',
               theme: ThemeData(
                   primarySwatch: Colors.purple,
                   accentColor: Colors.orange,
@@ -66,7 +70,6 @@ class MyApp extends StatelessWidget {
               //authenticatd ->yes =>show ProductsOverview screen
               routes: {
                 // AuthScreen.routeName:(ctx)=>AuthScreen(),
-
                 ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
                 CartScreen.routeName: (ctx) => CartScreen(),
                 OrdersScreen.routeName: (ctx) => OrdersScreen(),

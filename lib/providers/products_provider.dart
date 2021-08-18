@@ -49,7 +49,8 @@ class Products with ChangeNotifier {
   // var _showFavoritesOnly=false;
 
   final String authToken;
-  Products(this.authToken,this._items);
+
+  Products(this.authToken, this._items);
 
   List<Product> get items {
     //we are managing the favorites and
@@ -95,14 +96,23 @@ class Products with ChangeNotifier {
   //-MfhQbjAe9zZWmRR_CpP: {description: Cool yellow Scarf!, imageUrl: https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg, isFavorite: false, price: 21.99, title: Yellow Scarf}, -MfhQk6a2vUPGJ26i-gr: {description: Smart and comfortable!, imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg, isFavorite: false, price: 15.77, title: Trousers }}
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(
-        'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json?auth=$authToken');
+    // final url = Uri.https(
+    //     'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json?auth=$authToken');
+
+    final url = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+    //add "auth=$authToken" at the end of the url
+    print('fetch and set function running');
+    // print(authToken);
     try {
       final response = await http.get(
           url); //Future<Response> get(Uri url, {Map<String, String> headers})
       // print(json.decode(response.body));
+      print('url running ');
+      print(response.body);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if(extractedData==null) {
+      print('extraced data.......... is $extractedData');
+      if (extractedData == null) {
         return;
       }
       final List<Product> loadedProducts = [];
@@ -201,7 +211,6 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    
     final url = Uri.https(
         'shop-app-16d20-default-rtdb.firebaseio.com', '/products/$id.json');
 

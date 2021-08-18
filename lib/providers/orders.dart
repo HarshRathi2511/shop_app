@@ -64,6 +64,7 @@ Future<void> fetchAndSetOrders() async {
     notifyListeners();
         } catch (error) {
           print(error);
+          // "error" : "Permission denied" when a non authenticated user gets the access
           throw error;
         }
  

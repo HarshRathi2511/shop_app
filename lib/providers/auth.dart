@@ -19,8 +19,8 @@ class Auth with ChangeNotifier {
   String get tokenData {
     if (_expiryDate != null &&
         _expiryDate.isAfter(DateTime.now()) &&
-        _token !=
-            null) //_expiryDate.isAfter(DateTime.now())->means expiry date sometime in the future
+        _token !=null) 
+        //_expiryDate.isAfter(DateTime.now())->means expiry date sometime in the future
     {
       return _token;
     }
@@ -40,7 +40,7 @@ class Auth with ChangeNotifier {
             'password': password,
             'returnSecureToken': true, //in the docs
           }));
-      print(json.decode(response.body));
+      // print(json.decode(response.body));
       //returns a map of
       //Property Name	Type	Description
 // idToken	   string	  A Firebase Auth ID token for the newly created user.
@@ -60,12 +60,17 @@ class Auth with ChangeNotifier {
       _expiryDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
       notifyListeners();
+       print('sign in / login success');
+
     } catch (error) {
+       print('error in sign up method');
       throw error;
+     
     }
   }
 
   Future<void> signup(String email, String password) async {
+  //     https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]
     return _authenticate(email, password,
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCskLDea1LV3lGR20monGKGz7gUGWlkuT8');
   }
