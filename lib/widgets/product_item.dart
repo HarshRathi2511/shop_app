@@ -63,7 +63,7 @@ class ProductItem extends StatelessWidget {
                 //here we need Product data to know if it has already been marked favorite
                 onPressed: () {
                   //pass the token here 
-                  product.toggleFavoriteStatus(product.id,authData.tokenData);
+                  product.toggleFavoriteStatus(productId: product.id,token: authData.tokenData,userId:authData.userId);
                 },
               )),
             ),

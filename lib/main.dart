@@ -32,13 +32,13 @@ class MyApp extends StatelessWidget {
             //cleans up the data once used=>eg screen replaced
             //at this point we have access to the previously provided objets
             //whenever auth changes this provider rebuilds
-            create: (ctx) => Products('token', []),
+            create: (ctx) => Products('token', [],'user id'),
             // Provider.of<Auth>(context, listen: false).tokenData,
             // Provider.of<Products>(context, listen: false).items),
 
             //when we use the update method then the previous state gets erased
             update: (ctx, auth, previousProducts) => Products(auth.tokenData,
-                previousProducts == null ? [] : previousProducts.items),
+                previousProducts == null ? [] : previousProducts.items,auth.userId),
 
             //previousProducts->previous state of the products
             //we also need to initialize the private properties of the class to avoid to losse them

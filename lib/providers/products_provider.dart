@@ -49,8 +49,9 @@ class Products with ChangeNotifier {
   // var _showFavoritesOnly=false;
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this._items,this.userId);
 
   List<Product> get items {
     //we are managing the favorites and
@@ -115,6 +116,17 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+
+      //now fetch the favorite status which was created in the another folder on firebase 
+      final favUrl = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
+       final favoriteResponse = await http.get(favUrl);
+       print(favoriteResponse.body);
+       //{"-MfhQbjAe9zZWmRR_CpP":true} => {'productid: 'favoriteStatus'}
+       final favoriteData = json.decode(favoriteResponse.body);
+
+
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodKey, prodValue) {
         //Applies [action] to each key/value pair of the map
@@ -122,10 +134,11 @@ class Products with ChangeNotifier {
           Product(
             id: prodKey,
             description: prodValue['description'],
-            title: prodValue['title'],
-            isFavorite: prodValue['isFavorite'],
+            title: prodValue['title'],           
             price: prodValue['price'],
             imageUrl: prodValue['imageUrl'],
+            isFavorite: favoriteData== null ?false :favoriteData[prodKey] ?? false,
+            //if favoriteData[prodKey] is null then ?? after the value (false ) is assigned to it
           ),
         );
       });
@@ -157,7 +170,7 @@ class Products with ChangeNotifier {
           'imageUrl': product.imageUrl,
           'description': product.description, //pass a map in json
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          // 'isFavorite': product.isFavorite,
           // 'id':
         }), //String encode(Object value, {Object Function(dynamic) toEncodable})
       );

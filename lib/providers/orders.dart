@@ -79,7 +79,9 @@ Future<void> fetchAndSetOrders() async {
     //Inserts [element] at position [index] in this list.
     //This increases the length of the list by one and shifts all objects at or after
     //the index towards the end of the list.
+    
 
+    //currently the orders are available to all the people ->to do :URGent 
     final url =
         Uri.parse('https://shop-app-16d20-default-rtdb.firebaseio.com/orders/orders.json?auth=$authToken');
 

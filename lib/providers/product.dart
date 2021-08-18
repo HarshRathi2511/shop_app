@@ -20,10 +20,12 @@ class Product with ChangeNotifier {
       @required this.imageUrl,
       this.isFavorite = false});
 
-  Future<void> toggleFavoriteStatus(String productId , String token) async {
-    //update it in firebase
+  Future<void> toggleFavoriteStatus({String productId , String token,String userId}) async {
+    //update it in firebase for just the individual auth user 
+    //for that the url should be "https://shop-app-16d20-default-rtdb.firebaseio.com /userFavorites(folder)/userid(subfolder for user)/entry productid 
+
     final url = Uri.parse(
-        'shop-app-16d20-default-rtdb.firebaseio.com/products/$id.json?auth=$token');
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$token');
 
    final oldFavoriteStatus = isFavorite;
 
@@ -35,9 +37,7 @@ class Product with ChangeNotifier {
   
     try{
        //utilise optimistic update
-     final response =await http.patch(url, body: json.encode({
-      'isFavorite' : isFavorite,  
-    }));
+     final response =await http.put(url, body: json.encode(isFavorite));  
     print(response.statusCode);//404 ->so the patch request doesnt update it 
 
     if(response.statusCode>=400) {
