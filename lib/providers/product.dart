@@ -37,7 +37,7 @@ class Product with ChangeNotifier {
   
     try{
        //utilise optimistic update
-     final response =await http.put(url, body: json.encode(isFavorite));  
+     final response =await http.put(url, body: json.encode(isFavorite)); //PUT - UPDATE  
     print(response.statusCode);//404 ->so the patch request doesnt update it 
 
     if(response.statusCode>=400) {

@@ -96,36 +96,34 @@ class Products with ChangeNotifier {
 
   //-MfhQbjAe9zZWmRR_CpP: {description: Cool yellow Scarf!, imageUrl: https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg, isFavorite: false, price: 21.99, title: Yellow Scarf}, -MfhQk6a2vUPGJ26i-gr: {description: Smart and comfortable!, imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg, isFavorite: false, price: 15.77, title: Trousers }}
 
-  Future<void> fetchAndSetProducts() async {
-    // final url = Uri.https(
-    //     'shop-app-16d20-default-rtdb.firebaseio.com', '/products.json?auth=$authToken');
+  Future<void> fetchAndSetProducts([bool filterByUser= false]) async {
+   
 
-    final url = Uri.parse(
-        'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+    // final url = Uri.parse(
+    //     'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     //add "auth=$authToken" at the end of the url
-    print('fetch and set function running');
-    // print(authToken);
+  final filterString =filterByUser? 'orderBy="creatorId"&equalTo="$userId"':'';
+//also fetch products the data for the favorite status for the individual logged in user 
+    final url = Uri.parse(
+        'https://shop-app-16d20-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
+  //&orderBy="creatorId"&equalTo="$userId" is the own filtering logic for just returning the data for the specific creator id  
     try {
       final response = await http.get(
           url); //Future<Response> get(Uri url, {Map<String, String> headers})
       // print(json.decode(response.body));
-      print('url running ');
-      print(response.body);
+
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      print('extraced data.......... is $extractedData');
+
       if (extractedData == null) {
         return;
       }
-
       //now fetch the favorite status which was created in the another folder on firebase 
       final favUrl = Uri.parse(
         'https://shop-app-16d20-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
        final favoriteResponse = await http.get(favUrl);
-       print(favoriteResponse.body);
-       //{"-MfhQbjAe9zZWmRR_CpP":true} => {'productid: 'favoriteStatus'}
+      //  print(favoriteResponse.body);
+       //{"-MfhQbjAe9zZWmRR_CpP":true} => {'productid: 'favoriteStatus'} =>List of maps 
        final favoriteData = json.decode(favoriteResponse.body);
-
-
 
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodKey, prodValue) {
@@ -149,7 +147,8 @@ class Products with ChangeNotifier {
       throw error;
     }
   }
-
+ 
+ //when we add a product it should be only visible to the user who had created it 
   Future<void> addProduct(Product product) async {
     //async->always returns a future
     //If a future doesnt return a usbale value then the futures type is Future<void>
@@ -170,6 +169,7 @@ class Products with ChangeNotifier {
           'imageUrl': product.imageUrl,
           'description': product.description, //pass a map in json
           'price': product.price,
+          'creatorId' :userId, //to distinguish who has made a product 
           // 'isFavorite': product.isFavorite,
           // 'id':
         }), //String encode(Object value, {Object Function(dynamic) toEncodable})

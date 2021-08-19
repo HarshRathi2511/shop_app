@@ -13,43 +13,61 @@ import '../screens/edit_product_screen.dart';
 class UserProductsScreen extends StatelessWidget {
   // const UserProductsScreen({ Key? key }) : super(key: key);
 
-  static const routeName ='/user-products';
+  static const routeName = '/user-products';
 
-  Future<void> _refreshProducts (BuildContext context) async {
-    await Provider.of<Products>(context,listen: false).fetchAndSetProducts();
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context, listen: false);
+    // final productsData = Provider.of<Products>(context, listen: false);
+    //will retrigger build and then a future builder so infinite loop
+    print('rebuilding ...');
 
     return Scaffold(
       appBar: AppBar(
         title: Text(' Manage products'),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {
-          Navigator.of(context).pushNamed(EditProductScreen.routeName);
-        })],
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditProductScreen.routeName);
+              })
+        ],
       ),
-      
       drawer: AppDrawer(),
-
-      body: RefreshIndicator(
-        onRefresh: ()=>_refreshProducts(context), //{Future<void> Function() onRefresh}
-              child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Consumer<Products>(
-            builder: (ctx, products, child) {
-              return ListView.builder(
-                  itemCount: productsData.items.length,
-                  itemBuilder: (c, i) {
-                    return UserProductItem(
-                        id: productsData.items[i].id,
-                        title: productsData.items[i].title,
-                        imageUrl: productsData.items[i].imageUrl);
-                  });
-            },
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProducts(context),
+        builder: (_, snapshot) => (snapshot.connectionState ==
+                ConnectionState.waiting)
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: () => _refreshProducts(
+                    context), //{Future<void> Function() onRefresh}
+                child: Consumer<Products>(
+                  builder: (c, productsData, _) {
+                    return Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Consumer<Products>(
+                        builder: (ctx, products, child) {
+                          return ListView.builder(
+                              itemCount: productsData.items.length,
+                              itemBuilder: (c, i) {
+                                return UserProductItem(
+                                    id: productsData.items[i].id,
+                                    title: productsData.items[i].title,
+                                    imageUrl: productsData.items[i].imageUrl);
+                              });
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
       ),
     );
   }
