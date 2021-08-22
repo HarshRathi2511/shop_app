@@ -1,6 +1,6 @@
 # shop_app
 
-A new Flutter project.
+A shop app where the users can add their products for sale and the rest of the users can buy the products, mark them favorites and add to the cart and finally checkout! Used Firebase as  a backend .
 
 ## Getting Started
 
